@@ -2,12 +2,13 @@ package di
 
 import data.repository.DataRepository
 import data.repository.DataRepositoryImpl
-import data.repository.DataService
 import org.koin.dsl.module
-import ui.screens.LogScreenModel
+import ui.screens.homeScreen.HomeScreenModel
+import ui.screens.logScreen.LogScreenModel
 
 val appModule = module {
     single<DataRepository> { DataRepositoryImpl() }
-    single { DataService(get()) }
-    factory { LogScreenModel(get()) }//https://voyager.adriel.cafe/screenmodel
+    //https://voyager.adriel.cafe/screenmodel
+    factory { LogScreenModel(get()) }
+    factory { HomeScreenModel(get()) }
 }

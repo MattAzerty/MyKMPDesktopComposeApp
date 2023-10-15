@@ -1,11 +1,10 @@
-package ui.screens
+package ui.screens.homeScreen
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import data.repository.DataRepository
 
-class LogScreenModel(
+class HomeScreenModel(
     private val dataRepository: DataRepository
-):ScreenModel {
+): ScreenModel {
 
-    val string = dataRepository.string
 }

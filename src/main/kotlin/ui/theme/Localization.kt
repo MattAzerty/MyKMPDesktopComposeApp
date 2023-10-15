@@ -8,6 +8,7 @@ enum class AvailableLanguages {
     // - [2] create a new string entry here:
 interface Localization {
     val appName: String
+    val language:String
     val startButton:String
 }
     // - [3] add respective translation here:
@@ -15,14 +16,16 @@ interface Localization {
         // ### ENGLISH ###
 
 private object EnglishLocalization : Localization {
-    override val appName = "My Desktop App"
+    override val appName = "• MyDesktopApp"
+    override val language= "[EN]"
     override val startButton = "START"
 }
 
         // ### FRENCH ###
 
 private object FrenchLocalization : Localization {
-    override val appName = "Mon Application Desktop"
+    override val appName = "• MyDesktopApp"
+    override val language="[FR]"
     override val startButton = "DÉMARRER"
 }
 

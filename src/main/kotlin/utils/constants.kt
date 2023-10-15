@@ -1,9 +1,8 @@
 package utils
 
-import data.MyData
+//WINDOWS
+const val MIN_HEIGHT_WINDOWS = 480
+const val MIN_WIDTH_WINDOWS = 640
 
-val DEFAULT_DATA = MyData(
-    myString = "- START -"
-)
-
-val DEFAULT_DATAS = listOf(DEFAULT_DATA)
+//
+const val APP_VERSION = "0.0.2"

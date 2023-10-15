@@ -6,7 +6,11 @@ import androidx.compose.ui.text.platform.Font
 val DesktopFontFamily = FontFamily(
     Font(
         resource = "font/Stifly.ttf",
-        //weight = FontWeight.W400,
-        //style = FontStyle.Normal
+    )
+)
+
+val DesktopFontSecondFamily = FontFamily(
+    Font(
+        resource = "font/Montera.ttf",
     )
 )

@@ -21,16 +21,6 @@ repositories {
 sourceSets.main {
     java.srcDirs("build/generated/ksp/main/kotlin")
 }
-/*kotlin {
-    //https://java73.medium.com/simple-way-to-use-common-resources-in-kotlin-multi-platform-project-95a3f886c6d9
-    //https://developer.squareup.com/blog/kotlin-multiplatform-shared-test-resources/
-    sourceSets {
-        named("main") {
-            resources.srcDirs("resources")
-            // other parts
-        }
-    }
-}*/
 
 
 dependencies {
@@ -57,10 +47,13 @@ dependencies {
     implementation("cafe.adriel.voyager:voyager-koin:$voyagerVersion")
 
 
-// Koin
+// Koin https://insert-koin.io/docs/quickstart/kotlin
     implementation("io.insert-koin:koin-core:3.5.0")
     implementation("io.insert-koin:koin-annotations:1.3.0")
     ksp("io.insert-koin:koin-ksp-compiler:1.3.0")
+
+//ICONs https://github.com/DevSrSouza/compose-icons/blob/master/font-awesome/DOCUMENTATION.md
+    implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0") // use for custom icons -> https://github.com/DevSrSouza/svg-to-compose
 
 
 }
