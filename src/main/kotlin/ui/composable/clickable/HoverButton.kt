@@ -1,5 +1,6 @@
-package ui.components.clickables
+package ui.composable.clickable
 
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
@@ -16,22 +17,28 @@ import ui.theme.DesktopFontFamily
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HoverButton(
+    modifier: Modifier = Modifier,
     textButton:String,
-    backgroundColor: Color,
+    backgroundColor: Color = Color.Blue,
+    disabledBackgroundColor:Color = Color.LightGray,
+    disabledContentColor:Color = Color.DarkGray,
     onButtonClick: () -> Unit,
 ){
 
     var active by remember { mutableStateOf(false) }
 
     Button(
-        modifier = Modifier
+        modifier = modifier
             .onPointerEvent(PointerEventType.Enter) { active = true }
             .onPointerEvent(PointerEventType.Exit) { active = false }
         ,
         enabled = active,
         onClick = onButtonClick,
+        shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = backgroundColor ,
+            backgroundColor = backgroundColor,
+            disabledBackgroundColor = disabledBackgroundColor,
+            disabledContentColor = disabledContentColor
         ),
 
         ) {
@@ -40,9 +47,6 @@ fun HoverButton(
             style = TextStyle(
                 fontFamily = DesktopFontFamily,
                 fontSize = 24.sp,
-                /*shadow = Shadow(
-                    color = LightBlue, offset = Offset(7.0f, 5.0f), blurRadius = 0.5f
-                )*/
             ),
         )
     }

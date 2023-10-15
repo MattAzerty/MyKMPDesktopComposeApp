@@ -2,9 +2,11 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 //https://github.com/JetBrains/compose-multiplatform-desktop-template#before-you-start
 plugins {
-    kotlin("jvm") version "1.9.0"
-    id("org.jetbrains.compose") version "1.5.3"
+    kotlin("jvm") version "1.9.10"
+    kotlin("plugin.serialization") version "1.9.0"
+    id("org.jetbrains.compose")
     id("com.google.devtools.ksp") version  "1.9.10-1.0.13"
+    id("app.cash.sqldelight") version "2.0.0"
 }
 
 group = "com.mattazerty"
@@ -17,21 +19,18 @@ repositories {
     google()
 }
 
+sqldelight {
+    databases {
+        create("MyDatabase") {
+            packageName.set("com.mattazerty")
+        }
+    }
+}
+
 // KSP - To use generated sources
 sourceSets.main {
     java.srcDirs("build/generated/ksp/main/kotlin")
 }
-/*kotlin {
-    //https://java73.medium.com/simple-way-to-use-common-resources-in-kotlin-multi-platform-project-95a3f886c6d9
-    //https://developer.squareup.com/blog/kotlin-multiplatform-shared-test-resources/
-    sourceSets {
-        named("main") {
-            resources.srcDirs("resources")
-            // other parts
-        }
-    }
-}*/
-
 
 dependencies {
     // Note, if you develop a library, you should use compose.desktop.common.
@@ -39,6 +38,7 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
 
 //Voyager for Navigation (Native one is Android only for now (10/2023): https://github.com/JetBrains/compose-multiplatform/tree/master/tutorials/Navigation)
 
@@ -57,11 +57,20 @@ dependencies {
     implementation("cafe.adriel.voyager:voyager-koin:$voyagerVersion")
 
 
-// Koin
+// Koin https://insert-koin.io/docs/quickstart/kotlin
     implementation("io.insert-koin:koin-core:3.5.0")
     implementation("io.insert-koin:koin-annotations:1.3.0")
     ksp("io.insert-koin:koin-ksp-compiler:1.3.0")
 
+//ICONs https://github.com/DevSrSouza/compose-icons/blob/master/font-awesome/DOCUMENTATION.md
+    implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0") // use for custom icons -> https://github.com/DevSrSouza/svg-to-compose
+
+//JSON https://github.com/Kotlin/kotlinx.serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+//SQLITE https://cashapp.github.io/sqldelight/2.0.0/jvm_sqlite/
+    implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
+    implementation("app.cash.sqldelight:coroutines-extensions:2.0.0")
 
 }
 
