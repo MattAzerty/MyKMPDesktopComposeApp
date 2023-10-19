@@ -1,0 +1,13 @@
+CREATE TABLE score (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  player_name TEXT NOT NULL,
+  timestamp INTEGER NOT NULL,
+  score INTEGER NOT NULL
+);
+
+SelectAll:
+SELECT * FROM score;
+
+InsertScore:
+INSERT INTO score(player_name, timestamp, score)
+VALUES (?, ?, ?);
