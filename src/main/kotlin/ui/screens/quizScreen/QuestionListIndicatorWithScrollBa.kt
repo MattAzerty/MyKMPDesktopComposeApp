@@ -1,4 +1,4 @@
-package ui.composable.scrollable
+package ui.screens.quizScreen
 
 import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.VerticalScrollbar
@@ -24,7 +24,7 @@ import utils.getTranslatedTypeOfQuestionString
 fun QuestionListIndicatorWithScrollBar(
     localization: Localization,
     listOfQuizQuestion:List<QuizQuestion>,
-    result: List<Boolean?>,
+    questionResultList: List<Boolean?>,
 ) {
 
     Box(
@@ -39,10 +39,15 @@ fun QuestionListIndicatorWithScrollBar(
             state
         ) {
 
-            items(result.size) { x ->
-                TextBox(
-                    text = "#${x+1}: ${getTranslatedTypeOfQuestionString(localization,listOfQuizQuestion[x].questionType)}",
-                    state = result[x]
+            items(questionResultList.size) { index ->
+                QuestionItem(
+                    text = "#${index + 1}: ${
+                        getTranslatedTypeOfQuestionString(
+                            localization,
+                            listOfQuizQuestion[index].questionType
+                        )
+                    }",
+                    questionResult = questionResultList[index]
                 )
                 Spacer(modifier = Modifier.height(5.dp))
             }
@@ -68,12 +73,12 @@ fun QuestionListIndicatorWithScrollBar(
 }
 
 @Composable
-fun TextBox(
+fun QuestionItem(
     text: String = "Item",
-    state:Boolean?,
+    questionResult:Boolean?,
 ) {
 
-    val itemColor = when(state){
+    val itemColor = when(questionResult){
         true -> DesktopGreenColor
         false -> DesktopRedColor
         null -> DesktopYellowColor

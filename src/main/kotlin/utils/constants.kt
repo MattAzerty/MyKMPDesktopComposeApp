@@ -40,6 +40,7 @@ val FEATURE = listOf(
     ),
 )
 //QUIZ SETTINGS
+const val NUMBER_OF_QUESTIONS_BY_QUIZ = 10
 enum class QuestionType {
     TITLE, ARTIST, ALBUM, YEAR, TEMPO, RHYTHM, GENRE;
 }

@@ -18,9 +18,9 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
+import ui.composable.scrollable.LazyListOfStringItemWithScrollBar
 import ui.composable.AppBar
 import ui.composable.Footer
-import ui.composable.scrollable.QuestionListIndicatorWithScrollBar
 import ui.theme.*
 import ui.window.MyApplicationWindowState
 
@@ -40,6 +40,7 @@ data class QuizScreen(
         val formattedTime = screenModel.uiState.formattedTimeCounterFlow.collectAsState()
         val quizQuestions = screenModel.uiState.quizQuestionFlow.collectAsState()
         val resultList = screenModel.uiState.resultListFlow.collectAsState()
+        val scoreList = screenModel.uiState.scoreListFlow.collectAsState(emptyList())
 
         val isThisQuizNotOver = derivedStateOf { resultList.value[resultList.value.size - 1] == null }
 
@@ -49,6 +50,14 @@ data class QuizScreen(
             onStarted = { screenModel.startJob() },
             onDisposed = { screenModel.cancelJob() }
         )
+
+        LaunchedEffect(true) {
+            screenModel.quizScreenEventSharedFlow.collect { event ->
+                when (event) {
+                    is QuizScreenEvent.ShowDialogWindowMessage -> state.sendNotificationDialog(event.message)
+                }
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -80,7 +89,7 @@ data class QuizScreen(
                         QuestionListIndicatorWithScrollBar(
                             localization = screenModel.uiState.localization,
                             listOfQuizQuestion = it,
-                            result = resultList.value
+                            questionResultList = resultList.value
                         )
                     }
 
@@ -126,9 +135,9 @@ data class QuizScreen(
 
                         } else {
                             // [2.2] Alternative UI when quiz over
-                            var text by remember { mutableStateOf("") }
+                            var playerName by remember { mutableStateOf("") }
                             Text(
-                                text = "${screenModel.uiState.localization.score} ${resultList.value.count { it == true }}",
+                                text = "${screenModel.uiState.localization.scoreSentenceQuizScreen} ${resultList.value.count { it == true }}",
                                 style = TextStyle(
                                     color = DesktopLightGreyColor,
                                     fontSize = 24.sp,
@@ -143,8 +152,15 @@ data class QuizScreen(
                             ) {
 
                                 TextField(
-                                    value = text,
-                                    onValueChange = { text = it.take(3).uppercase() },
+                                    value = playerName,
+                                    label = { Text(
+                                        text = screenModel.uiState.localization.trigramFieldHintQuizScreen,
+                                        style = TextStyle(
+                                            color = DesktopLightGreyColor,
+                                            fontSize = 24.sp,
+                                        )
+                                    ) },
+                                    onValueChange = { playerName = it.take(3).uppercase() },
                                     textStyle = TextStyle(
                                         fontSize = 24.sp,
                                         color = DesktopLightGreyColor
@@ -152,7 +168,12 @@ data class QuizScreen(
                                     singleLine = true,
                                 )
 
-                                Button({screenModel.onSaveScoreButtonClicked(text)}){ Text(screenModel.uiState.localization.saveScoreButtonQuizScreen)}
+                                Button(
+                                    modifier = Modifier.padding(DefaultItemPadding),
+                                    onClick = {screenModel.onSaveScoreButtonClicked(playerName)}
+                                ){ Text(screenModel.uiState.localization.saveScoreButtonQuizScreen)}
+
+                                LazyListOfStringItemWithScrollBar(DesktopYellowColor, scoreList.value)
 
                             }
 

@@ -1,5 +1,3 @@
-package com.withings.mycomposeandblepractice.ui.presentation.components.clickables
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

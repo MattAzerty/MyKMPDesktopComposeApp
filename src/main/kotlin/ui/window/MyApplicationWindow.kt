@@ -1,5 +1,6 @@
 package ui.window
 
+import ClickableIcon
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.runtime.*
@@ -9,13 +10,24 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.*
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.ScaleTransition
-import com.withings.mycomposeandblepractice.ui.presentation.components.clickables.ClickableIcon
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
@@ -23,8 +35,6 @@ import compose.icons.fontawesomeicons.regular.WindowMaximize
 import compose.icons.fontawesomeicons.regular.WindowMinimize
 import compose.icons.fontawesomeicons.regular.WindowRestore
 import compose.icons.fontawesomeicons.solid.Times
-import di.appModule
-import org.koin.core.context.startKoin
 import ui.screens.logScreen.LogScreen
 import ui.theme.*
 import utils.FileDialog
@@ -39,11 +49,6 @@ fun MyApplicationWindow(
 
     val scope = rememberCoroutineScope()
     fun exit() = scope.launch { state.exit() }
-
-        //DI with Koin
-        startKoin {
-            modules(appModule)
-        }
 
 //https://github.com/JetBrains/compose-multiplatform/tree/master/tutorials/Window_API_new
     Window(
@@ -69,7 +74,42 @@ fun MyApplicationWindow(
                 )
             }
 
-            //Window appearance properties
+        //to launch a DialogWindow if needed
+        if (state.messageNotificationDialog != null) {
+            DialogWindow(
+                icon = painterResource("image/notif_icon.png"),
+                title = "Notification:",
+                onCloseRequest = { state.closeNotificationDialog() },
+                onPreviewKeyEvent = {
+                    if (it.key == Key.Escape && it.type == KeyEventType.KeyDown) {
+                        state.closeNotificationDialog()
+                        true
+                    } else {
+                        false
+                    }
+                }) {
+                window.setSize(500,200)
+                window.minimumSize = Dimension(500,200)
+                Box(Modifier.fillMaxSize().background(DesktopLightGreyColor)){
+                    Text(
+                        modifier = Modifier.align(Alignment.Center).padding(DefaultItemPadding),
+                        text = state.messageNotificationDialog ?: "Error",
+                        style = TextStyle(
+                            fontFamily = DesktopFontFamily,
+                            fontSize = 40.sp,
+                            shadow = Shadow(
+                                color = Color.Black.copy(0.3f),
+                                offset = Offset(7.0f, 4.0f),
+                                blurRadius = 0.5f
+                            )
+                        )
+                    )
+                }
+
+            }
+        }
+
+            //Main Window appearance properties
             Surface(
                 modifier = Modifier.fillMaxSize().padding(DefaultTextPadding).shadow(DefaultShadowElevation, RoundedCornerShape(WindowRoundedCornerSize)),
                 shape = RoundedCornerShape(WindowRoundedCornerSize)
@@ -81,13 +121,7 @@ fun MyApplicationWindow(
                         isWindowFloating =  state.window.placement == WindowPlacement.Floating,
                         onCloseWindow = { exit() },
                         onMinimiseWindow = { state.window.isMinimized = !state.window.isMinimized },
-                        onMaximizeOrFloatingWindow = {
-                            state.window.placement = if (state.window.placement == WindowPlacement.Floating) {
-                                WindowPlacement.Maximized
-                            } else {
-                                WindowPlacement.Floating
-                            }
-                        }
+                        onToggleFullscreen = state::toggleFullscreen
                     )
                     // [2] - APP CONTENT
                     App(state)
@@ -96,13 +130,13 @@ fun MyApplicationWindow(
 
         }
     }
-
+//Custom titleBar
 @Composable
 private fun WindowScope.AppWindowTitleBar(
     isWindowFloating:Boolean,
     onCloseWindow: () -> Unit,
     onMinimiseWindow: () -> Unit,
-    onMaximizeOrFloatingWindow:() -> Unit,
+    onToggleFullscreen:() -> Unit,
 ) = WindowDraggableArea {
 
     Box(
@@ -127,16 +161,16 @@ private fun WindowScope.AppWindowTitleBar(
             ) {
                 onMinimiseWindow()
             }
-            //MAXIMISE (OR OPPOSITE) WINDOW
+            //TOGGLE FULLSCREEN
             ClickableIcon(
                 modifier = Modifier.padding(horizontal = MinimumPadding, vertical = MinimumPadding),
                 imageVector = if(isWindowFloating) FontAwesomeIcons.Regular.WindowMaximize else FontAwesomeIcons.Regular.WindowRestore,
                 colorTint = DesktopLightGreyColor,
                 iconSize = MinimumIconSize
             ) {
-                onMaximizeOrFloatingWindow()
+                onToggleFullscreen()
             }
-            //CLOSE WINDOW todo: here it's also closing the application since no multiple window are required
+            //CLOSE WINDOW
             ClickableIcon(
                 modifier = Modifier.padding(horizontal = MinimumPadding, vertical = MinimumPadding),
                 imageVector = FontAwesomeIcons.Solid.Times,

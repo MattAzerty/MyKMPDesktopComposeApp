@@ -1,9 +1,8 @@
 package ui.window
 
 import MyApplicationState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,6 +18,9 @@ class MyApplicationWindowState(
     val window = WindowState()
 
     val openDialog = DialogState<Path?>()
+
+    var messageNotificationDialog:String? by mutableStateOf(null)
+        private set
 
     var isInit by mutableStateOf(false)
         private set
@@ -38,6 +40,19 @@ class MyApplicationWindowState(
             _text = value
             isChanged = true
         }
+
+
+    fun toggleFullscreen() {
+        window.placement = if (window.placement == WindowPlacement.Fullscreen) {
+            WindowPlacement.Floating
+        } else {
+            WindowPlacement.Fullscreen
+        }
+    }
+
+    fun sendNotificationDialog(myMessage:String){
+        messageNotificationDialog = myMessage
+    }
 
     suspend fun exit(): Boolean {
         exit(this)
@@ -79,6 +94,10 @@ class MyApplicationWindowState(
 
     private suspend fun Path.readTextAsync() = withContext(Dispatchers.IO) {
         toFile().readText()
+    }
+
+    fun closeNotificationDialog() {
+        messageNotificationDialog = null
     }
 
 }

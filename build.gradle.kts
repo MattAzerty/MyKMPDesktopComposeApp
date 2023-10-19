@@ -12,9 +12,9 @@ plugins {
 group = "com.mattazerty"
 version = "1.0-SNAPSHOT"
 
-
 repositories {
     mavenCentral()
+    mavenLocal()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     google()
 }
@@ -22,7 +22,7 @@ repositories {
 sqldelight {
     databases {
         create("MyDatabase") {
-            packageName.set("com.mattazerty")
+            packageName.set("com.mattazerty.db")
         }
     }
 }
@@ -79,9 +79,21 @@ compose.desktop {
         mainClass = "MainKt"
 
         nativeDistributions {//https://github.com/JetBrains/compose-multiplatform/tree/master/tutorials/Native_distributions_and_local_execution
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "MyDesktopApp"
             packageVersion = "1.0.0"
+
+            modules("java.sql") //needed for sqldelight use
+
+            windows {
+                menuGroup = "MyDesktopApp"
+                // see https://wixtoolset.org/documentation/manual/v3/howtos/general/generate_guids.html
+                upgradeUuid = "432782c7-da73-421b-b362-ed9f11355312"
+                shortcut = true
+                perUserInstall = true //trying to avoid admin right privilege folders -> https://github.com/JetBrains/compose-multiplatform/issues/2625 else use https://conveyor.hydraulic.dev/11.4/configs/windows/#requesting-administrator-access
+            }
+
         }
     }
 }

@@ -2,7 +2,7 @@ package ui.screens.homeScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
@@ -36,6 +36,8 @@ data class HomeScreen(
             contentAlignment = Alignment.Center
         ) {
 
+
+
         Column(
             modifier = Modifier
                 .padding(DefaultItemPadding)
@@ -53,8 +55,8 @@ data class HomeScreen(
                     when (it) {
                         0 -> navigator.push(QuizScreen(state))
                         else -> {
-                            println("Not yet implemented")
-                        } //TODO notification
+                            state.sendNotificationDialog( screenModel.localization.notYetImplementedMessage)
+                        }
                     }
                 }
             )

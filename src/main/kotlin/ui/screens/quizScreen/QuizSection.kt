@@ -4,19 +4,19 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -24,15 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
-import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.regular.Dizzy
-import compose.icons.fontawesomeicons.regular.Grimace
 import compose.icons.fontawesomeicons.regular.GrinStars
-import compose.icons.fontawesomeicons.solid.Check
 import data.domain.json.transformed.QuizQuestion
 import kotlinx.coroutines.delay
 import ui.theme.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun QuizSection(
     modifier: Modifier = Modifier,
@@ -161,12 +159,12 @@ fun QuizSection(
                         AlbumItem(
                             animateFront = animateFront,
                             headerTextItem = localization.year,
-                            itemText = if (quizQuestion.track.year == -1) "?" else quizQuestion.track.year.toString(),
+                            itemText = if (quizQuestion.track.year == -1) "??" else quizQuestion.track.year.toString(),
                         )
                         AlbumItem(
                             animateFront = animateFront,
                             headerTextItem = localization.tempo,
-                            itemText = if (quizQuestion.track.tempo == -1) "?" else quizQuestion.track.tempo.toString(),
+                            itemText = if (quizQuestion.track.tempo == -1) "??" else quizQuestion.track.tempo.toString(),
                         )
                         AlbumItem(
                             animateFront = animateFront,
@@ -207,7 +205,7 @@ fun QuizSection(
 
 
                     Text(
-                        text = if(isAnswerCorrect) localization.correctAnswer else localization.wrongAnswer,
+                        text = if(isAnswerCorrect) localization.correctAnswerQuizScreen else localization.wrongAnswerQuizScreen,
                         color = Color.White,
                         modifier = Modifier
                             .wrapContentSize()
@@ -229,25 +227,42 @@ fun QuizSection(
         Column(
             modifier = modifier,
             content = {
+
                 val rows = quizQuestion.options.chunked(2)
 
-                rows.forEachIndexed { rowIndex, rowItems ->
+                Text(
+                    modifier = Modifier.padding(MinimumPadding),
+                    text = localization.optionAnswerFieldHintQuizSection,
+                    color = DesktopLightGreyColor,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                )
+
+                rows.forEachIndexed { _, rowItems ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(DefaultImagePadding),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        rowItems.forEachIndexed { index, option ->
+                        rowItems.forEachIndexed { _, option ->
+
+                            var active by remember { mutableStateOf(false) }
+
                             Button(
                                 modifier = Modifier
+                                    .onPointerEvent(PointerEventType.Enter) { active = true }
+                                    .onPointerEvent(PointerEventType.Exit) { active = false }
                                     .weight(1f)
                                     .padding(DefaultImagePadding),
                                 onClick = { handleAnswerClick(option) },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = DesktopBlueColor)
+                                colors = ButtonDefaults.buttonColors(backgroundColor = if(active) DesktopYellowColor  else DesktopPurpleColor),
                             ) {
                                 Text(
                                     text = option,
+                                    color = Color.Black,
+                                    fontSize = 16.sp,
+                                    //fontWeight = FontWeight.Bold,
                                     maxLines = 1,
                                 )
                             }

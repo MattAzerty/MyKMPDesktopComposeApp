@@ -6,6 +6,9 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.loadImageBitmap
 import ui.theme.Localization
 import java.io.File
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 fun Path.standardQuadFromTo(from: Offset, to: Offset) {
@@ -27,4 +30,11 @@ fun getTranslatedTypeOfQuestionString(localization: Localization, questionType: 
         QuestionType.RHYTHM -> localization.rhythm
         QuestionType.GENRE -> localization.genre
     }
+}
+
+fun timestampToDateString(timestamp: Long): String {
+    val instant = Instant.ofEpochMilli(timestamp)
+    val zoneId = ZoneId.systemDefault()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(zoneId)
+    return formatter.format(instant)
 }
