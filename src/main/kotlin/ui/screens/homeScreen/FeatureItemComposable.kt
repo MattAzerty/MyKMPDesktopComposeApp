@@ -1,5 +1,6 @@
 package ui.screens.homeScreen
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -9,45 +10,68 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import data.domain.Feature
 import ui.theme.*
+import utils.noRippleClickable
 import utils.standardQuadFromTo
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FeatureItem(
     feature: Feature,
     onFeatureClicked: (id: Int) -> Unit,
 ) {
+//GraphicLayer
+    val density = LocalDensity.current
+    val translationYAnimateForIconToPx = with(density) { -8.dp.roundToPx() }.toFloat()
+    val translationYAnimateForTextToPx = with(density) { 14.dp.roundToPx() }.toFloat()
+    var active by remember { mutableStateOf(false) }
+    val rotationXAnimateForCard: Float by animateFloatAsState(if (active) 50f else 0f)
+    val translationYAnimateForIcon: Float by animateFloatAsState(if(active) translationYAnimateForIconToPx else 0f)
+    val translationYAnimateForText: Float by animateFloatAsState(if(active) translationYAnimateForTextToPx else 0f)
+    val scaleAnimateForIcon: Float by animateFloatAsState(if (active) 1.2f else 1f)
+
+    Box(
+        modifier = Modifier
+            .padding(DefaultItemPadding)
+            .requiredWidth(120.dp)
+            .requiredHeight(108.dp)
+    ) {
 
     Card(
         modifier = Modifier
-            .padding(12.dp)
-            .clickable {
+            .onPointerEvent(PointerEventType.Enter) { active = true }
+            .onPointerEvent(PointerEventType.Exit) { active = false }
+            .noRippleClickable {
                 onFeatureClicked(feature.id)
             }
-            .width(32.dp)
-            .height(96.dp),
+            .graphicsLayer {
+                this.rotationX = rotationXAnimateForCard
+            },
         contentColor = Color.Transparent,
-        border = BorderStroke(2.dp, color = DesktopLightGreyColor),
+        border = BorderStroke(2.dp, color = if(active) DesktopBlueColor else feature.imageTint),
         elevation = 2.dp,
         shape = RoundedCornerShape(16.dp)
     ) {
 
         BoxWithConstraints(
             modifier = Modifier
-                .fillMaxSize()
                 .background(feature.backgroundCardColor)
         ) {
 
@@ -86,24 +110,46 @@ fun FeatureItem(
 
 
     Column(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.padding(vertical = 11.dp))
+        Spacer(modifier = Modifier.weight(1f))
         Icon(
             imageVector = feature.imageVector,
             contentDescription = feature.title,
             modifier = Modifier
+                .graphicsLayer {
+                    this.translationY = translationYAnimateForIcon
+                    this.scaleX = scaleAnimateForIcon
+                    this.scaleY = scaleAnimateForIcon
+                }
                 .size(48.dp),
             tint = feature.imageTint
         )
-        Spacer(modifier = Modifier.padding(vertical = DefaultImagePadding))
+        Spacer(modifier = Modifier.padding(vertical = 12.dp))
         Text(
+            modifier = Modifier.graphicsLayer {
+                this.translationY = translationYAnimateForText
+                this.scaleX = scaleAnimateForIcon
+                this.scaleY = scaleAnimateForIcon
+            },
             text = "• ${feature.title} •",
-            color = DesktopBackgroundColor,
-            fontFamily = DesktopFontFamily,
-            fontSize = 16.sp
+            //color = if(active) DesktopYellowColor else DesktopBackgroundColor,
+            //fontFamily = DesktopFontFamily,
+            //fontSize = 16.sp
+            style = TextStyle(
+                color = if(active) DesktopLightGreyColor else DesktopBackgroundColor,
+                fontFamily = DesktopFontFamily,
+                fontSize = 16.sp,
+                shadow = if(active) Shadow(
+                    color = Color.Black.copy(0.3f),
+                    offset = Offset(7.0f, 4.0f),
+                    blurRadius = 0.5f
+                ) else null
+            )
         )
+        Spacer(modifier = Modifier.weight(0.7f))
     }
 
-}
+}}

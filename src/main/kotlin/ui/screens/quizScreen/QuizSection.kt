@@ -2,6 +2,7 @@ package ui.screens.quizScreen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -86,6 +87,7 @@ fun QuizSection(
             shape = RoundedCornerShape(14.dp),
             elevation = 4.dp,
             backgroundColor = DesktopGreyColor,
+            border = if(rotated) BorderStroke(2.dp, color = if(isAnswerCorrect) DesktopGreenColor else DesktopRedColor) else null,
             contentColor = Color.White
         ) {
             if (!rotated) {
@@ -256,11 +258,11 @@ fun QuizSection(
                                     .weight(1f)
                                     .padding(DefaultImagePadding),
                                 onClick = { handleAnswerClick(option) },
-                                colors = ButtonDefaults.buttonColors(backgroundColor = if(active) DesktopYellowColor  else DesktopPurpleColor),
+                                colors = ButtonDefaults.buttonColors(backgroundColor = if(active) DesktopYellowColor  else DesktopGreyColor),
                             ) {
                                 Text(
                                     text = option,
-                                    color = Color.Black,
+                                    color = if(active) Color.Black else Color.White,
                                     fontSize = 16.sp,
                                     //fontWeight = FontWeight.Bold,
                                     maxLines = 1,

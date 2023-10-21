@@ -11,6 +11,7 @@ val MinimumPadding = 2.dp
 
 //SIZE
 val MinimumIconSize = 16.dp
+val DefaultIconSize = 32.dp
 val DefaultSpacerHeight = 4.dp
 val DefaultFooterHeight = 56.dp
 val DefaultShadowElevation = 3.dp

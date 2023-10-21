@@ -80,7 +80,9 @@ data class LogScreen(val state: MyApplicationWindowState) : Screen {
                 )
 
                 // [4] - BOTTOM BAR
-                Footer(Modifier)
+                Footer(
+                    onGearButtonClicked = { state.sendNotificationDialog(screenModel.uiViewState.localization.notYetImplementedMessage) }
+                )
 
             }
 

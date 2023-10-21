@@ -18,9 +18,12 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import ui.composable.scrollable.LazyListOfStringItemWithScrollBar
 import ui.composable.AppBar
 import ui.composable.Footer
+import ui.screens.homeScreen.HomeScreen
 import ui.theme.*
 import ui.window.MyApplicationWindowState
 
@@ -34,6 +37,7 @@ data class QuizScreen(
     override fun Content() {
 
         val screenModel = getScreenModel<QuizScreenModel>()
+        val navigator = LocalNavigator.currentOrThrow
 
         //UI STATE
         val appBarText = screenModel.uiState.appBarTextFlow.collectAsState()
@@ -102,7 +106,7 @@ data class QuizScreen(
                     }
 
                 }
-                // [2] - RIGHT SCREEN WITH QUIZ INTERFACE
+                // [2] - RIGHT SCREEN WITH QUIZ INTERFACE (Album card and buttons choices)
                 Column {
 
                     AppBar(appBarText = appBarText.value)
@@ -184,7 +188,12 @@ data class QuizScreen(
                 }
             }
             // [3] - FOOTER
-            Footer(Modifier.weight(0.1f))
+            Footer(
+                modifier = Modifier.weight(0.1f),
+                onGearButtonClicked = { state.sendNotificationDialog( screenModel.uiState.localization.notYetImplementedMessage) },
+                onBackButtonClicked = { navigator.push(HomeScreen(state))},
+                isBackButtonEnables = true
+            )
         }
 
     }

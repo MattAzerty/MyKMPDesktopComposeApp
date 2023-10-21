@@ -18,7 +18,7 @@ fun FeaturesSection(
 
     LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.Adaptive(128.dp),
+        columns = GridCells.Fixed(6),//Adaptive(128.dp),
         contentPadding = PaddingValues(DefaultItemPadding),
         content = {
             items(features.size) { index ->
