@@ -52,6 +52,7 @@ fun MyApplicationWindow(
 
 //https://github.com/JetBrains/compose-multiplatform/tree/master/tutorials/Window_API_new
     Window(
+            title = "MyDesktopApp",
             icon = painterResource("icon_quiz_linux.png"),
             transparent = true,
             undecorated = true,

@@ -18,19 +18,9 @@ class MyApplicationState {
     fun newWindow() {
         _windows.add(
             MyApplicationWindowState(
-                application = this,
                 path = null,
                 exit = _windows::remove
             )
         )
-    }
-
-    suspend fun exit() {
-        val windowsCopy = windows.reversed()
-        for (window in windowsCopy) {
-            if (!window.exit()) {
-                break
-            }
-        }
     }
 }

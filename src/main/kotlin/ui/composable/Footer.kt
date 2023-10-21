@@ -7,11 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import compose.icons.FontAwesomeIcons
-import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.regular.WindowMinimize
 import compose.icons.fontawesomeicons.solid.AngleLeft
-import compose.icons.fontawesomeicons.solid.BorderStyle
 import compose.icons.fontawesomeicons.solid.Cog
 import ui.theme.*
 

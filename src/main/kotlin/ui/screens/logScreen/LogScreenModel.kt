@@ -5,9 +5,7 @@ import data.repository.DataRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class LogScreenModel(
-    //dataRepository: DataRepository
-):ScreenModel,KoinComponent {
+class LogScreenModel:ScreenModel,KoinComponent {
 
     private val dataRepository:DataRepository by inject()
 

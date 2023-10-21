@@ -1,5 +1,6 @@
 package ui.screens.homeScreen
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -46,6 +47,7 @@ fun FeatureItem(
     val translationYAnimateForIcon: Float by animateFloatAsState(if(active) translationYAnimateForIconToPx else 0f)
     val translationYAnimateForText: Float by animateFloatAsState(if(active) translationYAnimateForTextToPx else 0f)
     val scaleAnimateForIcon: Float by animateFloatAsState(if (active) 1.2f else 1f)
+
 
     Box(
         modifier = Modifier

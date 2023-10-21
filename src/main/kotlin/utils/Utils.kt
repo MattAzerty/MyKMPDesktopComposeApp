@@ -6,11 +6,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.res.loadImageBitmap
 import ui.theme.Localization
-import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -51,8 +48,7 @@ fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
     }
 }
 
-//linear interpolation ex: start 10f stop 20f fraction 05f -> lerp = 15.0 when start fraction
-// = 0 when stop fraction should be equal to 1
-fun linearInterpolation(start: Float, stop: Float, fraction: Float): Float {
+//linear interpolation: fraction need to be 0f -> 1f format (for start -> stop evolution value result)
+fun lerp(start: Float, stop: Float, fraction: Float): Float {
     return (1 - fraction) * start + fraction * stop
 }

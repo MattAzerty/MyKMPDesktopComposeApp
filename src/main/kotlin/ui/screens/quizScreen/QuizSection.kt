@@ -1,5 +1,6 @@
 package ui.screens.quizScreen
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -29,7 +30,10 @@ import compose.icons.fontawesomeicons.regular.Dizzy
 import compose.icons.fontawesomeicons.regular.GrinStars
 import data.domain.json.transformed.QuizQuestion
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.StateFlow
 import ui.theme.*
+import utils.FIELD_PLACEHOLDER
+import utils.lerp
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -38,10 +42,16 @@ fun QuizSection(
     localization: Localization,
     quizQuestion: QuizQuestion,
     onAnswerClicked: (isAnswerCorrect: Boolean) -> Unit,
+    fractionFlow: StateFlow<Float>,
 ) {
 
     var rotated by remember { mutableStateOf(false) }
     var isAnswerCorrect by remember { mutableStateOf(false) }
+    val fraction = fractionFlow.collectAsState()
+    val cursorColor:Color by animateColorAsState(
+        targetValue = if (fraction.value >=0.55f) DesktopBlueColor else DesktopYellowColor,
+        animationSpec = tween(durationMillis = 100)
+    )
 
     fun handleAnswerClick(selectedOption: String) {
         isAnswerCorrect = selectedOption == quizQuestion.correctAnswer
@@ -95,7 +105,7 @@ fun QuizSection(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
-                        .width(IntrinsicSize.Min)
+                        .width(IntrinsicSize.Max)
                         .padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                 ) {
 
@@ -137,7 +147,7 @@ fun QuizSection(
                         AlbumItem(
                             animateFront = animateFront,
                             headerTextItem = localization.title,
-                            itemText = quizQuestion.track.title ?: "---",
+                            itemText = quizQuestion.track.title ?: "   ",
                         )
                         AlbumItem(
                             animateFront = animateFront,
@@ -161,12 +171,12 @@ fun QuizSection(
                         AlbumItem(
                             animateFront = animateFront,
                             headerTextItem = localization.year,
-                            itemText = if (quizQuestion.track.year == -1) "??" else quizQuestion.track.year.toString(),
+                            itemText = if (quizQuestion.track.year == -1) FIELD_PLACEHOLDER else quizQuestion.track.year.toString(),
                         )
                         AlbumItem(
                             animateFront = animateFront,
                             headerTextItem = localization.tempo,
-                            itemText = if (quizQuestion.track.tempo == -1) "??" else quizQuestion.track.tempo.toString(),
+                            itemText = if (quizQuestion.track.tempo == -1) FIELD_PLACEHOLDER else quizQuestion.track.tempo.toString(),
                         )
                         AlbumItem(
                             animateFront = animateFront,
@@ -174,17 +184,22 @@ fun QuizSection(
                             itemText = quizQuestion.track.rhythm,
                         )
                     }
+                    Row {
+                        Spacer(Modifier.weight(1f))
+                        Spacer(
+                            modifier = Modifier
+                                .padding(DefaultItemPadding)
+                                .background(cursorColor)
+                                .fillMaxWidth(lerp(1f,0f,fraction.value))
+                                .height(DefaultSpacerHeight)
+                                .graphicsLayer {
+                                    alpha = animateFront
+                                },
+                        )
+                        Spacer(Modifier.weight(1f))
+                    }
 
-                    Spacer(
-                        modifier = Modifier
-                            .padding(DefaultItemPadding)
-                            .background(DesktopYellowColor)
-                            .fillMaxWidth()
-                            .height(DefaultSpacerHeight)
-                            .graphicsLayer {
-                                alpha = animateFront
-                            },
-                    )
+
                 }
             } else {
                 Column(

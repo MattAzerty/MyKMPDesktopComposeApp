@@ -9,6 +9,7 @@ data class QuizUIViewState(
     val localization: Localization,
     val appBarTextFlow: StateFlow<String>,
     val formattedTimeCounterFlow: StateFlow<String?>,
+    val progressTimeFractionFlow: StateFlow<Float>,
     val quizQuestionFlow: StateFlow<List<QuizQuestion>?>,
     val resultListFlow: StateFlow<List<Boolean?>>,
     val scoreListFlow: Flow<List<String>>,

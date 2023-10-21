@@ -11,15 +11,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import utils.MAXIMUM_QUIZ_TIME_SECONDS
-import utils.NUMBER_OF_QUESTIONS_BY_QUIZ
-import utils.QuestionType
-import utils.timestampToDateString
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.*
+import utils.*
 
 class QuizScreenModel : ScreenModel, KoinComponent {
 
@@ -32,6 +24,7 @@ class QuizScreenModel : ScreenModel, KoinComponent {
     private val appBarTextMutableStateFlow: MutableStateFlow<String> =
         MutableStateFlow(dataRepository.localization.appBarQuizScreen)
     private val formattedTimeCounterMutableStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val progressTimeFractionMutableStateFlow: MutableStateFlow<Float> = MutableStateFlow(1f)
     private val quizQuestionMutableStateFlow: MutableStateFlow<List<QuizQuestion>?> = MutableStateFlow(null)
     private val resultListMutableStateFlow: MutableStateFlow<MutableList<Boolean?>> =
         MutableStateFlow(MutableList(NUMBER_OF_QUESTIONS_BY_QUIZ) { null })
@@ -43,6 +36,7 @@ class QuizScreenModel : ScreenModel, KoinComponent {
         localization = dataRepository.localization,
         appBarTextFlow = appBarTextMutableStateFlow.asStateFlow(),
         formattedTimeCounterFlow = formattedTimeCounterMutableStateFlow.asStateFlow(),
+        progressTimeFractionFlow = progressTimeFractionMutableStateFlow.asStateFlow(),
         quizQuestionFlow = quizQuestionMutableStateFlow.asStateFlow(),
         resultListFlow = resultListMutableStateFlow.asStateFlow(),
         scoreListFlow = dataRepository.scoresFlow.map { listOfScore ->
@@ -55,10 +49,10 @@ class QuizScreenModel : ScreenModel, KoinComponent {
                     }"
                 }
         }
-    )//flowOf(List(10) { index -> "Item $index" }))
+    )
 
     private var lastTimestamp = System.currentTimeMillis()
-    private var currentTimestamp = 0L
+    private var currentTimestamp = System.currentTimeMillis()
     private var isScoreSaved = false
 
 
@@ -109,13 +103,13 @@ class QuizScreenModel : ScreenModel, KoinComponent {
             questions.add(
                 QuizQuestion(
                     when (questionType) {
-                        QuestionType.TITLE -> track.copy(title = "??")
-                        QuestionType.ARTIST -> track.copy(artist = "??")
-                        QuestionType.ALBUM -> track.copy(album = "??")
+                        QuestionType.TITLE -> track.copy(title = FIELD_PLACEHOLDER)
+                        QuestionType.ARTIST -> track.copy(artist = FIELD_PLACEHOLDER)
+                        QuestionType.ALBUM -> track.copy(album = FIELD_PLACEHOLDER)
                         QuestionType.YEAR -> track.copy(year = -1)
                         QuestionType.TEMPO -> track.copy(tempo = -1)
-                        QuestionType.RHYTHM -> track.copy(rhythm = "??")
-                        QuestionType.GENRE -> track.copy(genre = "??")
+                        QuestionType.RHYTHM -> track.copy(rhythm = FIELD_PLACEHOLDER)
+                        QuestionType.GENRE -> track.copy(genre = FIELD_PLACEHOLDER)
                     },
                     questionType,
                     correctAnswer,
@@ -142,7 +136,9 @@ class QuizScreenModel : ScreenModel, KoinComponent {
                 delay(10L)
 
                 currentTimestamp = System.currentTimeMillis()
-                formattedTimeCounterMutableStateFlow.value = formatTime(currentTimestamp - lastTimestamp)
+                val elapsedTimeMs = currentTimestamp - lastTimestamp
+                formattedTimeCounterMutableStateFlow.value = formatTime(elapsedTimeMs)
+                progressTimeFractionMutableStateFlow.value = ((elapsedTimeMs/1000f) / MAXIMUM_QUIZ_TIME_SECONDS)
 
                 if (currentTimestamp - lastTimestamp >= MAXIMUM_QUIZ_TIME_SECONDS * 1000 && isSetOfQuestionNotFinish()) {
                     resultListMutableStateFlow.value[getNextQuestionIndex()] = false
@@ -172,16 +168,13 @@ class QuizScreenModel : ScreenModel, KoinComponent {
     }
 
 
-    private fun formatTime(timeMillis: Long): String {
-        val localDateTime = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(timeMillis),
-            ZoneId.systemDefault()
-        )
-        val formatter = DateTimeFormatter.ofPattern(
-            "mm:ss:SSS",
-            Locale.getDefault()
-        )
-        return localDateTime.format(formatter)
+    private fun formatTime(elapsedTimeMs: Long): String {
+        val deltaMs = MAXIMUM_QUIZ_TIME_SECONDS*1000 - elapsedTimeMs
+        val minutes = (deltaMs / 60000) % 60
+        val seconds = (deltaMs / 1000) % 60
+        val milliseconds = deltaMs % 1000
+
+        return String.format("%02d:%02d:%03d", minutes, seconds, milliseconds)
     }
 
     fun onResetButtonPressed() {
@@ -208,7 +201,7 @@ class QuizScreenModel : ScreenModel, KoinComponent {
 
         } else {
 
-            val errorMessage = when{
+            val errorMessage = when {
                 playerName.isBlank() -> dataRepository.localization.fieldIsEmptyMessageError
                 isScoreSaved -> dataRepository.localization.scoreAlreadySavedMessageError
                 else -> "Error"

@@ -2,7 +2,6 @@ package utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.AwtWindow
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.WindowScope

@@ -3,10 +3,7 @@ package ui.screens.quizScreen
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -122,6 +119,7 @@ data class QuizScreen(
                                 Box(modifier = Modifier.verticalScroll(quizSectionScrollState)) {
 
                                     QuizSection(
+                                        fractionFlow = screenModel.uiState.progressTimeFractionFlow,
                                         localization = screenModel.uiState.localization,
                                         quizQuestion = quizQuestions[resultList.value.indexOfFirst { it == null }],
                                         onAnswerClicked = {
@@ -148,7 +146,10 @@ data class QuizScreen(
                                 )
                             )
 
-                            Button({ screenModel.onResetButtonPressed() }) { Text(screenModel.uiState.localization.resetButtonQuizScreen) }
+                            Button(
+                                modifier = Modifier.padding(DefaultItemPadding),
+                                onClick = { screenModel.onResetButtonPressed() }
+                            ) { Text(screenModel.uiState.localization.resetButtonQuizScreen) }
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -176,12 +177,21 @@ data class QuizScreen(
                                     modifier = Modifier.padding(DefaultItemPadding),
                                     onClick = {screenModel.onSaveScoreButtonClicked(playerName)}
                                 ){ Text(screenModel.uiState.localization.saveScoreButtonQuizScreen)}
+                                Column {
+                                    Text(
+                                        modifier = Modifier.padding(horizontal = DefaultItemPadding, vertical = MinimumPadding),
+                                        text = "SCORE :",
+                                        style = TextStyle(
+                                            fontFamily = DesktopFontFamily,
+                                            color = DesktopYellowColor,
+                                            fontSize = 24.sp,
+                                        )
+                                    )
+                                    LazyListOfStringItemWithScrollBar(DesktopYellowColor, scoreList.value)
+                                }
 
-                                LazyListOfStringItemWithScrollBar(DesktopYellowColor, scoreList.value)
 
                             }
-
-
 
                         }
                     }

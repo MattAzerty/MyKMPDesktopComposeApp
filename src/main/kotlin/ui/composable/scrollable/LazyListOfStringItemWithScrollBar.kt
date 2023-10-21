@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import ui.theme.DesktopBlueColor
 import ui.theme.DesktopLightGreyColor
 import ui.theme.DesktopRedColor
 import ui.theme.DesktopYellowColor
@@ -27,14 +26,16 @@ fun LazyListOfStringItemWithScrollBar(
 ) {
 
     Box(
-        modifier = Modifier.wrapContentSize()
+        modifier = Modifier
+            .wrapContentSize()
             .padding(10.dp)
     ) {
 
         val state = rememberLazyListState()
 
         LazyColumn(
-            Modifier.padding(end = 12.dp),
+            Modifier
+                .padding(end = 12.dp),
             state
         ) {
 
@@ -49,7 +50,9 @@ fun LazyListOfStringItemWithScrollBar(
         }
 
         VerticalScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight(),
             style = ScrollbarStyle(
                 unhoverColor = DesktopYellowColor,
                 shape = CircleShape,
@@ -74,7 +77,7 @@ fun TextBox(
 
     Box(
         modifier = Modifier.height(32.dp)
-            .wrapContentWidth()
+            .fillMaxWidth()
             .background(color = backgroundItemColor)
             .padding(start = 10.dp, end = 10.dp),
         contentAlignment = Alignment.CenterStart

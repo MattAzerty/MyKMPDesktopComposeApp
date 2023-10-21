@@ -11,10 +11,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import kotlinx.coroutines.delay
 import kotlin.math.sin
 
-//https://codepen.io/pdx4d/pen/YVMKaM
-//https://medium.com/google-developer-experts/exploring-jetpack-compose-canvas-the-power-of-drawing-8cc60815babe
-//https://www.answertopia.com/jetpack-compose/jetpack-compose-canvas-graphics-drawing-tutorial/
-//https://medium.com/s23nyc-tech/geometric-android-animations-using-the-canvas-dd687c43f3f4
 @Composable
 fun SineWaveGenerator(
     modifier: Modifier = Modifier,
@@ -63,7 +59,7 @@ fun SineWaveGenerator(
                         Color.Red,
                         Color.Transparent
                     ),
-                    center = Offset(size.width/2, size.height/2),
+                    center = Offset((size.width/2), size.height/2),
                     radius = size.width/2f
                 ),
                 radius = size.width/2f,
@@ -98,17 +94,17 @@ fun createSineWavePath(
     val waveCenter = canvasHeight / 2f
     val halfCanvasWidth = canvasWidth / 2f
 
-    for (i in 0 until canvasWidth.toInt()) {
+    for (i in 0 until (canvasWidth.toInt()) -1) { //limit Canvas (start and end) avoided because of pixel glitch issue.
 
         val x = (time * 10 + (-waveCenter + i) / wavelength).toFloat() //time to seconds - center
         val normalizedX = (i - halfCanvasWidth) / halfCanvasWidth
-        val amplitudeAtX = amplitude * (1 - normalizedX * normalizedX)
+        val amplitudeAtX = amplitude * (1 - normalizedX * normalizedX) // a² for 0 - 1 - 0 behavior on amplitude factor
         val y = (sin(x) * amplitudeAtX + waveCenter)
 
         if (i == 0) {
-            path.moveTo(0f, y)
+            path.moveTo(1f, y)
         } else {
-            path.lineTo(i.toFloat(), y)
+            path.lineTo(i.toFloat()+1f, y)
         }
     }
 
